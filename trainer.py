@@ -1,5 +1,7 @@
 """Funções de treinamento e avaliação dos modelos."""
 
+import time
+
 import keras
 import numpy as np
 from keras.callbacks import EarlyStopping
@@ -48,7 +50,7 @@ def _build_report_from_model(
 def train_and_evaluate_baseline(
     dataset_name: str,
     splits: DatasetSplits,
-    epochs: int = 50,
+    epochs: int = 80,
     batch_size: int = 32,
     class_names: tuple[str, str] = ('Inativo', 'Ativo'),
 ) -> view.EvaluationReport:
@@ -58,7 +60,7 @@ def train_and_evaluate_baseline(
     model = build_baseline_cnn()
     timer = view.EpochTimerCallback()
     early_stop = EarlyStopping(
-        monitor='val_loss', patience=8, restore_best_weights=True
+        monitor='val_loss', patience=20, restore_best_weights=True
     )
 
     hist = model.fit(
@@ -85,8 +87,8 @@ def train_and_evaluate_baseline(
 def train_and_evaluate_resnet(
     dataset_name: str,
     splits: DatasetSplits,
-    epochs_stage1: int = 15,
-    epochs_stage2: int = 35,
+    epochs_stage1: int = 20,
+    epochs_stage2: int = 50,
     batch_size: int = 32,
     class_names: tuple[str, str] = ('Inativo', 'Ativo'),
 ) -> view.EvaluationReport:
@@ -97,7 +99,7 @@ def train_and_evaluate_resnet(
 
     # Estágio 1: Feature Extraction (backbone congelado)
     timer_s1 = view.EpochTimerCallback()
-    es_s1 = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
+    es_s1 = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
     hist_s1 = model.fit(
         x_train,
         y_train,
@@ -112,7 +114,7 @@ def train_and_evaluate_resnet(
         model, base_model, fine_tune_from_layer=154, learning_rate=1e-5
     )
     timer_s2 = view.EpochTimerCallback()
-    es_s2 = EarlyStopping(monitor='val_loss', patience=8, restore_best_weights=True)
+    es_s2 = EarlyStopping(monitor='val_loss', patience=25, restore_best_weights=True)
     hist_s2 = model.fit(
         x_train,
         y_train,
@@ -137,5 +139,41 @@ def train_and_evaluate_resnet(
         history=full_history,
         epoch_times=full_epoch_times,
         total_time=full_total_time,
+        class_names=class_names,
+    )
+
+
+def evaluate_majority_classifier(
+    dataset_name: str,
+    splits: DatasetSplits,
+    class_names: tuple[str, str] = ('Inativo', 'Ativo'),
+) -> view.EvaluationReport:
+    """Avalia um classificador trivial que sempre prediz a classe majoritária do treino.
+    """
+    _, y_train, _, y_val, _, y_test = splits
+
+    start_time = time.perf_counter()
+    # Conta ocorrências de False (0) e True (1) no treino
+    majority_class = bool(np.mean(y_train) >= 0.5)
+    prob_value = 1.0 if majority_class else 0.0
+    elapsed = time.perf_counter() - start_time
+
+    return view.EvaluationReport(
+        dataset_name=dataset_name,
+        model_type='Dummy (Classe Majoritária)',
+        history={
+            'loss': [0.0],
+            'val_loss': [0.0],
+            'accuracy': [0.0],
+            'val_accuracy': [0.0],
+        },
+        y_train=y_train,
+        y_train_prob=np.full(len(y_train), prob_value, dtype=np.float32),
+        y_val=y_val,
+        y_val_prob=np.full(len(y_val), prob_value, dtype=np.float32),
+        y_test=y_test,
+        y_test_prob=np.full(len(y_test), prob_value, dtype=np.float32),
+        epoch_times=[elapsed],
+        total_time=elapsed,
         class_names=class_names,
     )
