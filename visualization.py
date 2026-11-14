@@ -2,6 +2,7 @@
 
 import time
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 import matplotlib.pyplot as plt
@@ -174,25 +175,30 @@ class EvaluationReport:
             'Épocas Executadas': len(self.history['loss']),
         }
 
-    def print_summary(self) -> None:
-        """Exibe no console o resumo numérico e a decomposição FP/FN."""
+    def format_summary(self) -> str:
+        """Retorna o resumo numérico e a decomposição FP/FN como texto formatado."""
         cm = self.confusion_breakdown
-        print(f'=== {self.dataset_name} | {self.model_type} ===')
-        print(f'Acurácia Treino:    {self.train_accuracy:.4f}')
-        print(f'Acurácia Validação: {self.val_accuracy:.4f}')
-        print(f'Acurácia Teste:     {self.test_accuracy:.4f}')
-        print(f'AUC-ROC (Teste):    {self.test_roc_auc:.4f}')
-        print(
+        return (
+            f'=== {self.dataset_name} | {self.model_type} ===\n'
+            f'Acurácia Treino:    {self.train_accuracy:.4f}\n'
+            f'Acurácia Validação: {self.val_accuracy:.4f}\n'
+            f'Acurácia Teste:     {self.test_accuracy:.4f}\n'
+            f'AUC-ROC (Teste):    {self.test_roc_auc:.4f}\n'
             f'Matriz Confusão:    TN={cm["TN"]}, FP={cm["FP"]}, '
-            f'FN={cm["FN"]}, TP={cm["TP"]}'
-        )
-        print(
+            f'FN={cm["FN"]}, TP={cm["TP"]}\n'
             f'Tempo Médio/Época:  {self.mean_epoch_time:.2f}s '
             f'(Total: {self.total_time:.2f}s | Melhor Época: {self.best_epoch})\n'
         )
 
+    def print_summary(self, save_path: str | Path | None = None) -> None:
+        """Exibe o resumo no console e, opcionalmente, salva em um arquivo .txt."""
+        summary_text = self.format_summary()
+        print(summary_text)
+        if save_path is not None:
+            Path(save_path).write_text(summary_text, encoding='utf-8')
+
     # --- Janela Única com Todos os Gráficos Solicitados ---
-    def plot_dashboard(self, save_path: str | None = None) -> None:
+    def plot_dashboard(self, save_path: str | None = None, show: bool = True,) -> None:
         """Renderiza uma única janela 2x2 com curvas de aprendizado, matriz de confusão
         e ROC."""
         fig, axes = plt.subplots(2, 2, figsize=(15, 11))
@@ -279,13 +285,29 @@ class EvaluationReport:
         ax_roc.legend(loc='lower right')
         ax_roc.grid(True, alpha=0.3)
 
-        plt.tight_layout(rect=(0, 0, 1, 0.96))
-        if save_path:
+        if save_path is not None:
             plt.savefig(save_path, dpi=300, bbox_inches='tight')
-        plt.show()
+
+        if show:
+            plt.show()
+        else:
+            plt.close(fig)
 
 
 def build_comparison_table(reports: list[EvaluationReport]) -> pd.DataFrame:
     """Consolida uma lista de relatórios na tabela comparativa final (Seção 6.4)."""
     rows = [report.to_summary_dict() for report in reports]
     return pd.DataFrame(rows)
+
+
+def save_experiment_report(
+    reports: list[EvaluationReport],
+    save_path: str | Path = 'relatorio_final.txt',
+) -> None:
+    """Salva todos os resumos individuais e a tabela comparativa em um .txt."""
+    sections = [report.format_summary() for report in reports]
+    df_comparison = build_comparison_table(reports)
+    sections.append(df_comparison.to_markdown(index=False))
+
+    full_text = '\n'.join(sections) + '\n'
+    Path(save_path).write_text(full_text, encoding='utf-8')
