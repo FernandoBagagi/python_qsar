@@ -5,7 +5,11 @@ import tensorflow as tf
 
 import visualization as view
 from data_loader import load_dataset
-from trainer import train_and_evaluate_baseline, train_and_evaluate_resnet
+from trainer import (
+    evaluate_majority_classifier,
+    train_and_evaluate_baseline,
+    train_and_evaluate_resnet,
+)
 
 # ========================
 # Configuração dos experimentos
@@ -36,6 +40,14 @@ for dataset_name in DATASETS:
     view.show_split_infos('train', x_train, y_train)
     view.show_split_infos('val', x_val, y_val)
     view.show_split_infos('test', x_test, y_test)
+
+    # ========================
+    # Baseline Trivial (Classe Majoritária)
+    # ========================
+
+    report_dummy = evaluate_majority_classifier(dataset_name, splits)
+    report_dummy.print_summary()
+    all_reports.append(report_dummy)
 
     # ========================
     # Treinamento e avaliação — Baseline
