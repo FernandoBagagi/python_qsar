@@ -13,21 +13,54 @@ from keras.layers import (
     Input,
     Lambda,
     MaxPooling2D,
+    RandomRotation,
+    RandomTranslation,
+    RandomZoom,
     Rescaling,
 )
-from keras.models import Model
+from keras.models import Model, Sequential
 from keras.optimizers import Adam
 from keras.regularizers import l2
+
+
+def build_molecular_augmentation() -> keras.Sequential:
+    """Data augmentation que preserva quiralidade (sem flip) e integridade (sem corte)."""
+    return Sequential(
+        [
+            RandomRotation(
+                factor=0.5,  # Rotação completa de -180° a +180°
+                fill_mode='constant',
+                fill_value=255.0,
+            ),
+            RandomTranslation(
+                height_factor=0.08,
+                width_factor=0.08,
+                fill_mode='constant',
+                fill_value=255.0,
+            ),
+            RandomZoom(
+                height_factor=(
+                    -0.10,
+                    0.05,
+                ),  # Mais zoom-out que zoom-in para evitar cortes
+                width_factor=(-0.10, 0.05),
+                fill_mode='constant',
+                fill_value=255.0,
+            ),
+        ],
+        name='molecular_augmentation',
+    )
 
 
 def build_baseline_cnn(
     input_shape: tuple[int, int, int] = (224, 224, 3),
     learning_rate: float = 1e-3,
-    l2_reg: float = 1e-4,
+    l2_reg: float = 1e-3,
 ) -> keras.Model:
     """Constrói uma CNN simples do zero com 3 blocos convolucionais."""
     inputs = Input(shape=input_shape)
-    x = Rescaling(1.0 / 255.0)(inputs)
+    x = build_molecular_augmentation()(inputs)
+    x = Rescaling(1.0 / 255.0)(x)
 
     for filters in (32, 64, 128):
         x = Conv2D(
@@ -42,9 +75,9 @@ def build_baseline_cnn(
         x = MaxPooling2D(pool_size=(2, 2))(x)
 
     x = GlobalAveragePooling2D()(x)
-    x = Dropout(0.4)(x)
+    x = Dropout(0.5)(x)
     x = Dense(64, activation='relu', kernel_regularizer=l2(l2_reg))(x)
-    x = Dropout(0.3)(x)
+    x = Dropout(0.4)(x)
     outputs = Dense(1, activation='sigmoid')(x)
 
     model = Model(inputs, outputs, name='Baseline_CNN')
@@ -58,7 +91,8 @@ def build_baseline_cnn(
 
 def build_resnet50v2_model(
     input_shape: tuple[int, int, int] = (224, 224, 3),
-    learning_rate: float = 1e-3,
+    learning_rate: float = 5e-4,
+    l2_reg: float = 1e-2,
 ) -> tuple[keras.Model, keras.Model]:
     """Constrói a ResNet50V2 congelada para o Estágio 1 (Feature Extraction)."""
     base_model = ResNet50V2(
@@ -69,12 +103,13 @@ def build_resnet50v2_model(
     base_model.trainable = False
 
     inputs = Input(shape=input_shape)
-    x = Lambda(preprocess_input, name='resnet_preprocess')(inputs)
+    x = build_molecular_augmentation()(inputs)
+    x = Lambda(preprocess_input, name='resnet_preprocess')(x)
     x = base_model(x, training=False)
     x = GlobalAveragePooling2D()(x)
-    x = Dropout(0.4)(x)
-    x = Dense(128, activation='relu')(x)
-    x = Dropout(0.3)(x)
+    x = Dropout(0.5)(x)
+    x = Dense(128, activation='relu', kernel_regularizer=l2(l2_reg))(x)
+    x = Dropout(0.5)(x)
     outputs = Dense(1, activation='sigmoid')(x)
 
     model = Model(inputs, outputs, name='ResNet50V2_FineTuning')
