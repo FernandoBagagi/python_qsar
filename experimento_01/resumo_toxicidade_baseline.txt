@@ -1,0 +1,7 @@
+=== toxicidade | Baseline ===
+Acurácia Treino:    0.7141
+Acurácia Validação: 0.7573
+Acurácia Teste:     0.6699
+AUC-ROC (Teste):    0.7630
+Matriz Confusão:    TN=69, FP=0, FN=34, TP=0
+Tempo Médio/Época:  114.04s (Total: 6158.14s | Melhor Época: 34)

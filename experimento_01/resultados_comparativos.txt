@@ -1,0 +1,83 @@
+=== bace_c | Dummy (Classe Majoritária) ===
+Acurácia Treino:    0.5383
+Acurácia Validação: 0.5455
+Acurácia Teste:     0.5865
+AUC-ROC (Teste):    0.5000
+Matriz Confusão:    TN=78, FP=0, FN=55, TP=0
+Tempo Médio/Época:  0.00s (Total: 0.00s | Melhor Época: 1)
+
+=== bace_c | Baseline ===
+Acurácia Treino:    0.5868
+Acurácia Validação: 0.5879
+Acurácia Teste:     0.5940
+AUC-ROC (Teste):    0.7089
+Matriz Confusão:    TN=41, FP=37, FN=17, TP=38
+Tempo Médio/Época:  159.50s (Total: 12759.75s | Melhor Época: 76)
+
+=== bace_c | Fine-tuning (ResNet50V2) ===
+Acurácia Treino:    0.7276
+Acurácia Validação: 0.6364
+Acurácia Teste:     0.6466
+AUC-ROC (Teste):    0.6963
+Matriz Confusão:    TN=60, FP=18, FN=29, TP=26
+Tempo Médio/Época:  155.61s (Total: 10893.23s | Melhor Época: 47)
+
+=== bbbp | Dummy (Classe Majoritária) ===
+Acurácia Treino:    0.7545
+Acurácia Validação: 0.8039
+Acurácia Teste:     0.8050
+AUC-ROC (Teste):    0.5000
+Matriz Confusão:    TN=0, FP=39, FN=0, TP=161
+Tempo Médio/Época:  0.00s (Total: 0.00s | Melhor Época: 1)
+
+=== bbbp | Baseline ===
+Acurácia Treino:    0.8135
+Acurácia Validação: 0.8529
+Acurácia Teste:     0.8450
+AUC-ROC (Teste):    0.7817
+Matriz Confusão:    TN=12, FP=27, FN=4, TP=157
+Tempo Médio/Época:  192.27s (Total: 15189.26s | Melhor Época: 59)
+
+=== bbbp | Fine-tuning (ResNet50V2) ===
+Acurácia Treino:    0.8597
+Acurácia Validação: 0.8137
+Acurácia Teste:     0.8650
+AUC-ROC (Teste):    0.7793
+Matriz Confusão:    TN=18, FP=21, FN=6, TP=155
+Tempo Médio/Época:  203.72s (Total: 12834.91s | Melhor Época: 38)
+
+=== toxicidade | Dummy (Classe Majoritária) ===
+Acurácia Treino:    0.7141
+Acurácia Validação: 0.7573
+Acurácia Teste:     0.6699
+AUC-ROC (Teste):    0.5000
+Matriz Confusão:    TN=69, FP=0, FN=34, TP=0
+Tempo Médio/Época:  0.00s (Total: 0.00s | Melhor Época: 1)
+
+=== toxicidade | Baseline ===
+Acurácia Treino:    0.7141
+Acurácia Validação: 0.7573
+Acurácia Teste:     0.6699
+AUC-ROC (Teste):    0.7630
+Matriz Confusão:    TN=69, FP=0, FN=34, TP=0
+Tempo Médio/Época:  114.04s (Total: 6158.14s | Melhor Época: 34)
+
+=== toxicidade | Fine-tuning (ResNet50V2) ===
+Acurácia Treino:    0.7925
+Acurácia Validação: 0.7767
+Acurácia Teste:     0.6990
+AUC-ROC (Teste):    0.7195
+Matriz Confusão:    TN=65, FP=4, FN=27, TP=7
+Tempo Médio/Época:  98.80s (Total: 4545.28s | Melhor Época: 17)
+
+| Dataset    | Modelo                     |   Acurácia Treino |   Acurácia Validação |   Acurácia Teste |   AUC-ROC (Teste) |   Tempo médio por época (s) |   Tempo total (s) |   Melhor Época |   Épocas Executadas |
+|:-----------|:---------------------------|------------------:|---------------------:|-----------------:|------------------:|----------------------------:|------------------:|---------------:|--------------------:|
+| bace_c     | Dummy (Classe Majoritária) |            0.5383 |               0.5455 |           0.5865 |            0.5    |                        0    |              0    |              1 |                   1 |
+| bace_c     | Baseline                   |            0.5868 |               0.5879 |           0.594  |            0.7089 |                      159.5  |          12759.8  |             76 |                  80 |
+| bace_c     | Fine-tuning (ResNet50V2)   |            0.7276 |               0.6364 |           0.6466 |            0.6963 |                      155.61 |          10893.2  |             47 |                  70 |
+| bbbp       | Dummy (Classe Majoritária) |            0.7545 |               0.8039 |           0.805  |            0.5    |                        0    |              0    |              1 |                   1 |
+| bbbp       | Baseline                   |            0.8135 |               0.8529 |           0.845  |            0.7817 |                      192.27 |          15189.3  |             59 |                  79 |
+| bbbp       | Fine-tuning (ResNet50V2)   |            0.8597 |               0.8137 |           0.865  |            0.7793 |                      203.72 |          12834.9  |             38 |                  63 |
+| toxicidade | Dummy (Classe Majoritária) |            0.7141 |               0.7573 |           0.6699 |            0.5    |                        0    |              0    |              1 |                   1 |
+| toxicidade | Baseline                   |            0.7141 |               0.7573 |           0.6699 |            0.763  |                      114.04 |           6158.14 |             34 |                  54 |
+| toxicidade | Fine-tuning (ResNet50V2)   |            0.7925 |               0.7767 |           0.699  |            0.7195 |                       98.8  |           4545.28 |             17 |                  46 |

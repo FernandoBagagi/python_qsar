@@ -1,0 +1,7 @@
+=== bbbp | Baseline ===
+Acurácia Treino:    0.8135
+Acurácia Validação: 0.8529
+Acurácia Teste:     0.8450
+AUC-ROC (Teste):    0.7817
+Matriz Confusão:    TN=12, FP=27, FN=4, TP=157
+Tempo Médio/Época:  192.27s (Total: 15189.26s | Melhor Época: 59)

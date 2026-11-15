@@ -1,0 +1,7 @@
+=== bace_c | Fine-tuning (ResNet50V2) ===
+Acurácia Treino:    0.7276
+Acurácia Validação: 0.6364
+Acurácia Teste:     0.6466
+AUC-ROC (Teste):    0.6963
+Matriz Confusão:    TN=60, FP=18, FN=29, TP=26
+Tempo Médio/Época:  155.61s (Total: 10893.23s | Melhor Época: 47)

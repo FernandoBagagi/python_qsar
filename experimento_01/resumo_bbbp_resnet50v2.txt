@@ -1,0 +1,7 @@
+=== bbbp | Fine-tuning (ResNet50V2) ===
+Acurácia Treino:    0.8597
+Acurácia Validação: 0.8137
+Acurácia Teste:     0.8650
+AUC-ROC (Teste):    0.7793
+Matriz Confusão:    TN=18, FP=21, FN=6, TP=155
+Tempo Médio/Época:  203.72s (Total: 12834.91s | Melhor Época: 38)

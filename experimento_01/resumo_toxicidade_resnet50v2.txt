@@ -1,0 +1,7 @@
+=== toxicidade | Fine-tuning (ResNet50V2) ===
+Acurácia Treino:    0.7925
+Acurácia Validação: 0.7767
+Acurácia Teste:     0.6990
+AUC-ROC (Teste):    0.7195
+Matriz Confusão:    TN=65, FP=4, FN=27, TP=7
+Tempo Médio/Época:  98.80s (Total: 4545.28s | Melhor Época: 17)
